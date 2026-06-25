@@ -6,7 +6,7 @@ public record PostDto(
     string? ImageUrl,
     Guid UserId,
     string Username,
-    string? AvatarUrl,
+    string? UserAvatarUrl,
     int LikesCount,
     int CommentCount,
     bool isLikeByCurrentUser,

@@ -1,12 +1,12 @@
-using SocialNet.Domain.Common;
+using Microsoft.AspNetCore.Identity;
 
 namespace SocialNet.Domain.Entities;
 
-public class User : BaseEntity
+public class User : IdentityUser<Guid>
 {
     public string Username { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;
+    public new string Email { get; set; } = string.Empty;
+    public new string? PasswordHash { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string? Bio { get; set; }
     public string? AvatarUrl { get; set; }
