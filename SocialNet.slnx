@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SocialNet.Api/SocialNet.Api.csproj" />
+  <Project Path="SocialNet.Application/SocialNet.Application.csproj" />
+  <Project Path="SocialNet.Domain/SocialNet.Domain.csproj" />
+  <Project Path="SocialNet.Infrastructure/SocialNet.Infrastructure.csproj" />
+</Solution>
