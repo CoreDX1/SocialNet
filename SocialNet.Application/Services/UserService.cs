@@ -54,8 +54,7 @@ public class UserService : IUserService
         );
     }
 
-    public async Task<UserDto> UpdateProfileAsync(
-        Guid userId, UpdateProfileRequest request, CancellationToken ct = default)
+    public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken ct = default)
     {
         var user = await _db.Set<Domain.Entities.User>()
             .FindAsync(new object[] { userId }, ct)

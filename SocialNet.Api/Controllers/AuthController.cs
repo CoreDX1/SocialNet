@@ -13,8 +13,12 @@ public class AuthController : ControllerBase
     public AuthController(IAuthService auth) => _auth = auth;
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
+    public async Task<IActionResult> Register(
+        [FromBody] RegisterRequest request,
+        CancellationToken ct
+    )
     {
+        Console.WriteLine($"Username: '{request.Username}', Email: '{request.Email}', Password: '{request.Password}', DisplayName: '{request.DisplayName}'");
         var result = await _auth.RegisterAsync(request, ct);
         return Ok(result);
     }

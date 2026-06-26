@@ -15,11 +15,7 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(opt =>
             opt.UseNpgsql(
-                config.GetConnectionString("Default"),
-                npgsql =>
-                {
-                    npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
-                }));
+                config.GetConnectionString("Default")));
 
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<AppDbContext>());
         services.AddScoped<IUnitOfWork, UnitOfWork>();

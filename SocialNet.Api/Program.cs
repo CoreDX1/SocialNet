@@ -5,25 +5,13 @@ using Microsoft.OpenApi;
 using SocialNet.Application;
 using SocialNet.Application.Interfaces;
 using SocialNet.Application.Services;
-using SocialNet.Domain.Entities;
 using SocialNet.Infrastructure;
-using SocialNet.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Servicios ----------
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
-// Identity
-builder
-    .Services.AddIdentityCore<User>(opt =>
-    {
-        opt.Password.RequireDigit = true;
-        opt.Password.RequiredLength = 8;
-        opt.User.RequireUniqueEmail = true;
-    })
-    .AddEntityFrameworkStores<AppDbContext>();
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]!;
