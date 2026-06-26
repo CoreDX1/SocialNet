@@ -19,7 +19,10 @@ public class CommentsController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> Create(
-        Guid postId, CreateCommentRequest request, CancellationToken ct)
+        Guid postId,
+        CreateCommentRequest request,
+        CancellationToken ct
+    )
     {
         var result = await _comments.CreateAsync(postId, UserId, request, ct);
         return Ok(result);
@@ -27,7 +30,11 @@ public class CommentsController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetByPost(
-        Guid postId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+        Guid postId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default
+    )
     {
         var result = await _comments.GetByPostAsync(postId, page, pageSize, ct);
         return Ok(result);

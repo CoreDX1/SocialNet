@@ -22,7 +22,11 @@ public class CommentService : ICommentService
     }
 
     public async Task<CommentDto> CreateAsync(
-        Guid postId, Guid userId, CreateCommentRequest request, CancellationToken ct = default)
+        Guid postId,
+        Guid userId,
+        CreateCommentRequest request,
+        CancellationToken ct = default
+    )
     {
         var postExists = await _db.Set<Post>().AnyAsync(p => p.Id == postId, ct);
         if (!postExists)
@@ -32,7 +36,7 @@ public class CommentService : ICommentService
         {
             Content = request.Content,
             UserId = userId,
-            PostId = postId
+            PostId = postId,
         };
 
         _db.Set<Comment>().Add(comment);
@@ -49,7 +53,11 @@ public class CommentService : ICommentService
     }
 
     public async Task<PagedResult<CommentDto>> GetByPostAsync(
-        Guid postId, int page, int pageSize, CancellationToken ct = default)
+        Guid postId,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
         var query = _db.Set<Comment>()
             .Include(c => c.User)
@@ -58,12 +66,16 @@ public class CommentService : ICommentService
 
         return await PagedResult<CommentDto>.CreateAsync(
             query.ProjectTo<CommentDto>(_mapper.ConfigurationProvider),
-            page, pageSize, ct);
+            page,
+            pageSize,
+            ct
+        );
     }
 
     public async Task DeleteAsync(Guid commentId, Guid userId, CancellationToken ct = default)
     {
-        var comment = await _db.Set<Comment>().FindAsync(new object[] { commentId }, ct)
+        var comment =
+            await _db.Set<Comment>().FindAsync(new object[] { commentId }, ct)
             ?? throw new ApplicationException("Comentario no encontrado.");
 
         if (comment.UserId != userId)

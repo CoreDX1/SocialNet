@@ -11,11 +11,13 @@ namespace SocialNet.Infrastructure;
 public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services, IConfiguration config)
+        this IServiceCollection services,
+        IConfiguration config
+    )
     {
         services.AddDbContext<AppDbContext>(opt =>
-            opt.UseNpgsql(
-                config.GetConnectionString("Default")));
+            opt.UseNpgsql(config.GetConnectionString("Default"))
+        );
 
         services.AddScoped<DbContext>(sp => sp.GetRequiredService<AppDbContext>());
         services.AddScoped<IUnitOfWork, UnitOfWork>();

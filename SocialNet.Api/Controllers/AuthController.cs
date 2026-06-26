@@ -18,7 +18,6 @@ public class AuthController : ControllerBase
         CancellationToken ct
     )
     {
-        Console.WriteLine($"Username: '{request.Username}', Email: '{request.Email}', Password: '{request.Password}', DisplayName: '{request.DisplayName}'");
         var result = await _auth.RegisterAsync(request, ct);
         return Ok(result);
     }

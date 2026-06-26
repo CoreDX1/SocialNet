@@ -25,7 +25,10 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("me")]
-    public async Task<IActionResult> UpdateProfile(UpdateProfileRequest request, CancellationToken ct)
+    public async Task<IActionResult> UpdateProfile(
+        UpdateProfileRequest request,
+        CancellationToken ct
+    )
     {
         var result = await _users.UpdateProfileAsync(UserId, request, ct);
         return Ok(result);
@@ -44,7 +47,8 @@ public class UsersController : ControllerBase
         [FromQuery] string q,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var result = await _users.SearchUsersAsync(q, page, pageSize, ct);
         return Ok(result);

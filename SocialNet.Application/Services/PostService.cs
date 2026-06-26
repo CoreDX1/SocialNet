@@ -23,7 +23,11 @@ public class PostService : IPostService
         _storage = storage;
     }
 
-    public async Task<PostDto> CreateAsync(Guid userId, CreatePostRequest request, CancellationToken ct = default)
+    public async Task<PostDto> CreateAsync(
+        Guid userId,
+        CreatePostRequest request,
+        CancellationToken ct = default
+    )
     {
         string? imageUrl = null;
 
@@ -36,7 +40,7 @@ public class PostService : IPostService
         {
             Content = request.Content,
             ImageUrl = imageUrl,
-            UserId = userId
+            UserId = userId,
         };
 
         _db.Set<Post>().Add(post);
@@ -45,7 +49,11 @@ public class PostService : IPostService
         return (await GetByIdAsync(post.Id, userId, ct))!;
     }
 
-    public async Task<PostDto?> GetByIdAsync(Guid postId, Guid currentUserId, CancellationToken ct = default)
+    public async Task<PostDto?> GetByIdAsync(
+        Guid postId,
+        Guid currentUserId,
+        CancellationToken ct = default
+    )
     {
         return await _db.Set<Post>()
             .Where(p => p.Id == postId)
@@ -54,8 +62,13 @@ public class PostService : IPostService
     }
 
     public async Task<PagedResult<PostDto>> GetFeedAsync(
-        Guid userId, int page, int pageSize, CancellationToken ct = default)
+        Guid userId,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
+        // Obtenemos los IDs de los seguidos
         var followingIds = await _db.Set<Follow>()
             .Where(f => f.FollowerId == userId)
             .Select(f => f.FollowingId)
@@ -63,17 +76,35 @@ public class PostService : IPostService
 
         followingIds.Add(userId); // incluir posts propios
 
+        // Consulta la base de publicación
         var query = _db.Set<Post>()
             .Where(p => followingIds.Contains(p.UserId))
             .OrderByDescending(p => p.CreatedAt);
 
-        return await PagedResult<PostDto>.CreateAsync(
-            query.ProjectTo<PostDto>(_mapper.ConfigurationProvider, new { currentUserId = userId }),
-            page, pageSize, ct);
+        var projectQuery = query.Select(p => new PostDto
+        {
+            Id = p.Id,
+            Content = p.Content,
+            ImageUrl = p.ImageUrl,
+            UserId = p.UserId,
+            Username = p.User.Username,
+            UserAvatarUrl = p.User.AvatarUrl,
+            LikesCount = p.Likes.Count,
+            CommentCount = p.Comments.Count,
+            IsLikeByCurrentUser = p.Likes.Any(l => l.UserId == userId),
+            CreatedAt = p.CreatedAt
+        });
+
+        return await PagedResult<PostDto>.CreateAsync(projectQuery, page, pageSize, ct);
     }
 
     public async Task<PagedResult<PostDto>> GetUserPostsAsync(
-        string username, Guid currentUserId, int page, int pageSize, CancellationToken ct = default)
+        string username,
+        Guid currentUserId,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
         var query = _db.Set<Post>()
             .Include(p => p.User)
@@ -82,12 +113,16 @@ public class PostService : IPostService
 
         return await PagedResult<PostDto>.CreateAsync(
             query.ProjectTo<PostDto>(_mapper.ConfigurationProvider, new { currentUserId }),
-            page, pageSize, ct);
+            page,
+            pageSize,
+            ct
+        );
     }
 
     public async Task DeleteAsync(Guid postId, Guid userId, CancellationToken ct = default)
     {
-        var post = await _db.Set<Post>().FindAsync(new object[] { postId }, ct)
+        var post =
+            await _db.Set<Post>().FindAsync(new object[] { postId }, ct)
             ?? throw new ApplicationException("Post no encontrado.");
 
         if (post.UserId != userId)

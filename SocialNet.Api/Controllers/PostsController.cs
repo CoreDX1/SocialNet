@@ -18,7 +18,10 @@ public class PostsController : ControllerBase
     private Guid UserId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] CreatePostRequest request, CancellationToken ct)
+    public async Task<IActionResult> Create(
+        [FromForm] CreatePostRequest request,
+        CancellationToken ct
+    )
     {
         var result = await _posts.CreateAsync(UserId, request, ct);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
@@ -35,7 +38,8 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetFeed(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var result = await _posts.GetFeedAsync(UserId, page, pageSize, ct);
         return Ok(result);
@@ -46,7 +50,8 @@ public class PostsController : ControllerBase
         string username,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         var result = await _posts.GetUserPostsAsync(username, UserId, page, pageSize, ct);
         return Ok(result);

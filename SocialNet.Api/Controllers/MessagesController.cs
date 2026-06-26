@@ -25,13 +25,22 @@ public class MessagesController : ControllerBase
     }
 
     [HttpGet("conversations")]
-    public async Task<IActionResult> GetConversations([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    public async Task<IActionResult> GetConversations(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default
+    )
     {
         return Ok(await _messages.GetConversationsAsync(UserId, page, pageSize, ct));
     }
 
     [HttpGet("conversations/{otherUserId:guid}")]
-    public async Task<IActionResult> GetConversation(Guid otherUserId, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, CancellationToken ct = default)
+    public async Task<IActionResult> GetConversation(
+        Guid otherUserId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        CancellationToken ct = default
+    )
     {
         return Ok(await _messages.GetConversationAsync(UserId, otherUserId, page, pageSize, ct));
     }

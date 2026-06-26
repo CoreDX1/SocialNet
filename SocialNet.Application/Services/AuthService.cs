@@ -23,7 +23,10 @@ public class AuthService : IAuthService
         _config = config;
     }
 
-    public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
+    public async Task<AuthResponse> RegisterAsync(
+        RegisterRequest request,
+        CancellationToken ct = default
+    )
     {
         var exists = await _db.Set<User>()
             .AnyAsync(u => u.Email == request.Email || u.Username == request.Username, ct);
@@ -36,7 +39,7 @@ public class AuthService : IAuthService
             Username = request.Username,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            DisplayName = request.DisplayName
+            DisplayName = request.DisplayName,
         };
 
         _db.Set<User>().Add(user);
@@ -47,8 +50,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken ct = default)
     {
-        var user = await _db.Set<User>()
-            .FirstOrDefaultAsync(u => u.Email == request.Email, ct)
+        var user =
+            await _db.Set<User>().FirstOrDefaultAsync(u => u.Email == request.Email, ct)
             ?? throw new ApplicationException("Credenciales inválidas.");
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
@@ -59,15 +62,14 @@ public class AuthService : IAuthService
 
     private AuthResponse GenerateToken(User user)
     {
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var expires = DateTime.UtcNow.AddHours(24);
 
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
         var token = new JwtSecurityToken(
@@ -75,12 +77,14 @@ public class AuthService : IAuthService
             audience: _config["Jwt:Audience"],
             claims: claims,
             expires: expires,
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+        );
 
         return new AuthResponse(
             user.Id,
             user.Username,
             new JwtSecurityTokenHandler().WriteToken(token),
-            expires);
+            expires
+        );
     }
 }

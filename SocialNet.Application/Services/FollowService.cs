@@ -22,7 +22,10 @@ public class FollowService : IFollowService
     }
 
     public async Task<bool> ToggleFollowAsync(
-        Guid followerId, Guid followingId, CancellationToken ct = default)
+        Guid followerId,
+        Guid followingId,
+        CancellationToken ct = default
+    )
     {
         if (followerId == followingId)
             throw new ApplicationException("No puedes seguirte a ti mismo.");
@@ -33,7 +36,9 @@ public class FollowService : IFollowService
 
         var existingFollow = await _db.Set<Follow>()
             .FirstOrDefaultAsync(
-                f => f.FollowerId == followerId && f.FollowingId == followingId, ct);
+                f => f.FollowerId == followerId && f.FollowingId == followingId,
+                ct
+            );
 
         if (existingFollow is not null)
         {
@@ -45,11 +50,7 @@ public class FollowService : IFollowService
         else
         {
             // Seguir
-            var follow = new Follow
-            {
-                FollowerId = followerId,
-                FollowingId = followingId
-            };
+            var follow = new Follow { FollowerId = followerId, FollowingId = followingId };
 
             _db.Set<Follow>().Add(follow);
             await _uow.SaveChangesAsync(ct);
@@ -58,7 +59,11 @@ public class FollowService : IFollowService
     }
 
     public async Task<PagedResult<UserDto>> GetFollowersAsync(
-        string username, int page, int pageSize, CancellationToken ct = default)
+        string username,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
         var query = _db.Set<Follow>()
             .Include(f => f.Follower)
@@ -68,11 +73,18 @@ public class FollowService : IFollowService
 
         return await PagedResult<UserDto>.CreateAsync(
             query.ProjectTo<UserDto>(_mapper.ConfigurationProvider),
-            page, pageSize, ct);
+            page,
+            pageSize,
+            ct
+        );
     }
 
     public async Task<PagedResult<UserDto>> GetFollowingAsync(
-        string username, int page, int pageSize, CancellationToken ct = default)
+        string username,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
         var query = _db.Set<Follow>()
             .Include(f => f.Following)
@@ -82,6 +94,9 @@ public class FollowService : IFollowService
 
         return await PagedResult<UserDto>.CreateAsync(
             query.ProjectTo<UserDto>(_mapper.ConfigurationProvider),
-            page, pageSize, ct);
+            page,
+            pageSize,
+            ct
+        );
     }
 }

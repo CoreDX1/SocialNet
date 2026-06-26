@@ -7,8 +7,8 @@ using SocialNet.Domain.Entities;
 
 namespace SocialNet.Application.Mappings;
 
-public class MappingProfile: Profile{
-
+public class MappingProfile : Profile
+{
     public MappingProfile()
     {
         CreateMap<User, UserDto>();
@@ -17,7 +17,7 @@ public class MappingProfile: Profile{
             .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.AvatarUrl))
             .ForMember(d => d.LikesCount, opt => opt.MapFrom(s => s.Likes.Count))
             .ForMember(d => d.CommentCount, opt => opt.MapFrom(s => s.Comments.Count));
-        CreateMap<Comment,CommentDto>()
+        CreateMap<Comment, CommentDto>()
             .ForMember(d => d.Username, opt => opt.MapFrom(s => s.User.Username))
             .ForMember(d => d.UserAvatarUrl, opt => opt.MapFrom(s => s.User.AvatarUrl));
 

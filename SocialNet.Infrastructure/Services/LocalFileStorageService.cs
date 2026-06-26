@@ -14,7 +14,11 @@ public class LocalFileStorageService : IFileStorageService
     }
 
     public async Task<string> SaveFileAsync(
-        Stream fileStream, string fileName, string folder, CancellationToken ct = default)
+        Stream fileStream,
+        string fileName,
+        string folder,
+        CancellationToken ct = default
+    )
     {
         var folderPath = Path.Combine(_basePath, folder);
         if (!Directory.Exists(folderPath))

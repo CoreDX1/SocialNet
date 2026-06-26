@@ -23,10 +23,14 @@ public class UserService : IUserService
     }
 
     public async Task<UserProfileDto> GetProfileAsync(
-        string username, Guid currentUserId, CancellationToken ct = default)
+        string username,
+        Guid currentUserId,
+        CancellationToken ct = default
+    )
     {
-        var user = await _db.Set<Domain.Entities.User>()
-            .FirstOrDefaultAsync(u => u.Username == username, ct)
+        var user =
+            await _db.Set<Domain.Entities.User>()
+                .FirstOrDefaultAsync(u => u.Username == username, ct)
             ?? throw new ApplicationException("Usuario no encontrado.");
 
         var postsCount = await _db.Set<Domain.Entities.Post>()
@@ -54,10 +58,14 @@ public class UserService : IUserService
         );
     }
 
-    public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken ct = default)
+    public async Task<UserDto> UpdateProfileAsync(
+        Guid userId,
+        UpdateProfileRequest request,
+        CancellationToken ct = default
+    )
     {
-        var user = await _db.Set<Domain.Entities.User>()
-            .FindAsync(new object[] { userId }, ct)
+        var user =
+            await _db.Set<Domain.Entities.User>().FindAsync(new object[] { userId }, ct)
             ?? throw new ApplicationException("Usuario no encontrado.");
 
         if (request.DisplayName is not null)
@@ -71,10 +79,14 @@ public class UserService : IUserService
     }
 
     public async Task<string> UploadAvatarAsync(
-        Guid userId, Stream fileStream, string fileName, CancellationToken ct = default)
+        Guid userId,
+        Stream fileStream,
+        string fileName,
+        CancellationToken ct = default
+    )
     {
-        var user = await _db.Set<Domain.Entities.User>()
-            .FindAsync(new object[] { userId }, ct)
+        var user =
+            await _db.Set<Domain.Entities.User>().FindAsync(new object[] { userId }, ct)
             ?? throw new ApplicationException("Usuario no encontrado.");
 
         if (!string.IsNullOrEmpty(user.AvatarUrl))
@@ -88,18 +100,26 @@ public class UserService : IUserService
     }
 
     public async Task<PagedResult<UserDto>> SearchUsersAsync(
-        string query, int page, int pageSize, CancellationToken ct = default)
+        string query,
+        int page,
+        int pageSize,
+        CancellationToken ct = default
+    )
     {
         var normalized = query.Trim().ToLower();
 
         var usersQuery = _db.Set<Domain.Entities.User>()
             .Where(u =>
-                u.Username.ToLower().Contains(normalized) ||
-                u.DisplayName.ToLower().Contains(normalized))
+                u.Username.ToLower().Contains(normalized)
+                || u.DisplayName.ToLower().Contains(normalized)
+            )
             .OrderBy(u => u.Username);
 
         return await PagedResult<UserDto>.CreateAsync(
             usersQuery.ProjectTo<UserDto>(_mapper.ConfigurationProvider),
-            page, pageSize, ct);
+            page,
+            pageSize,
+            ct
+        );
     }
 }

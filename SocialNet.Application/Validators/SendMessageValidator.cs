@@ -8,8 +8,6 @@ public class SendMessageValidator : AbstractValidator<SendMessageRequest>
     public SendMessageValidator()
     {
         RuleFor(x => x.ReceiverId).NotEmpty();
-        RuleFor(x => x.Content)
-            .NotEmpty()
-            .MaximumLength(1000);
+        RuleFor(x => x.Content).NotEmpty().MaximumLength(1000);
     }
 }

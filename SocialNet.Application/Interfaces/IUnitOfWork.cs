@@ -1,5 +1,6 @@
 namespace SocialNet.Application.Interfaces;
 
-public interface IUnitOfWork : IDisposable{
+public interface IUnitOfWork : IDisposable
+{
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 }
