@@ -55,10 +55,26 @@ public class PostService : IPostService
         CancellationToken ct = default
     )
     {
-        return await _db.Set<Post>()
-            .Where(p => p.Id == postId)
-            .ProjectTo<PostDto>(_mapper.ConfigurationProvider, new { currentUserId })
-            .FirstOrDefaultAsync(ct);
+        IQueryable<Post> query = _db.Set<Post>().Where(p => p.Id == postId);
+
+        var projectQuery = query.Select(p => new PostDto{
+            Id = p.Id,
+            Content = p.Content,
+            ImageUrl = p.ImageUrl,
+            UserId = p.UserId,
+            Username = p.User.Username,
+            UserAvatarUrl = p.User.AvatarUrl,
+            LikesCount = p.Likes.Count,
+            CommentCount = p.Comments.Count,
+            CreatedAt = p.CreatedAt
+        });
+
+        // return await _db.Set<Post>()
+        //     .Where(p => p.Id == postId)
+        //     .ProjectTo<PostDto>(_mapper.ConfigurationProvider, new { currentUserId })
+        //     .FirstOrDefaultAsync(ct);
+
+        return await projectQuery.FirstOrDefaultAsync(ct);
     }
 
     public async Task<PagedResult<PostDto>> GetFeedAsync(
