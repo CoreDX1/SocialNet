@@ -22,6 +22,7 @@ public class LikeService : ILikeService
     )
     {
         var postExists = await _db.Set<Post>().AnyAsync(p => p.Id == postId, ct);
+
         if (!postExists)
             throw new ApplicationException("El post no existe.");
 

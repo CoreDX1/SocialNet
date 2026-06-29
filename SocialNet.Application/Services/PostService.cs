@@ -57,7 +57,8 @@ public class PostService : IPostService
     {
         IQueryable<Post> query = _db.Set<Post>().Where(p => p.Id == postId);
 
-        var projectQuery = query.Select(p => new PostDto{
+        var projectQuery = query.Select(p => new PostDto
+        {
             Id = p.Id,
             Content = p.Content,
             ImageUrl = p.ImageUrl,
@@ -66,7 +67,7 @@ public class PostService : IPostService
             UserAvatarUrl = p.User.AvatarUrl,
             LikesCount = p.Likes.Count,
             CommentCount = p.Comments.Count,
-            CreatedAt = p.CreatedAt
+            CreatedAt = p.CreatedAt,
         });
 
         // return await _db.Set<Post>()
@@ -108,7 +109,7 @@ public class PostService : IPostService
             LikesCount = p.Likes.Count,
             CommentCount = p.Comments.Count,
             IsLikeByCurrentUser = p.Likes.Any(l => l.UserId == userId),
-            CreatedAt = p.CreatedAt
+            CreatedAt = p.CreatedAt,
         });
 
         return await PagedResult<PostDto>.CreateAsync(projectQuery, page, pageSize, ct);

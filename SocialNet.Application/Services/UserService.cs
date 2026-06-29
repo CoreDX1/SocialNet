@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNet.Application.DTOs.Common;
 using SocialNet.Application.DTOs.User;
 using SocialNet.Application.Interfaces;
+using SocialNet.Domain.Entities;
 
 namespace SocialNet.Application.Services;
 
@@ -108,18 +109,52 @@ public class UserService : IUserService
     {
         var normalized = query.Trim().ToLower();
 
-        var usersQuery = _db.Set<Domain.Entities.User>()
-            .Where(u =>
-                u.Username.ToLower().Contains(normalized)
-                || u.DisplayName.ToLower().Contains(normalized)
-            )
-            .OrderBy(u => u.Username);
+        // 1. Preprar la consulta
+        IQueryable<User> users = _db.Set<User>();
 
-        return await PagedResult<UserDto>.CreateAsync(
-            usersQuery.ProjectTo<UserDto>(_mapper.ConfigurationProvider),
-            page,
-            pageSize,
-            ct
+        // 2. Aplicamos un filtro de busqueda
+        IQueryable<User> filteredUser = users.Where(u =>
+            u.Username.ToLower().Contains(normalized)
+            || u.DisplayName.ToLower().Contains(normalized)
         );
+
+        // 3. Ordenamos el resultddo
+        IQueryable<User> orderedUser = filteredUser.OrderBy(user => user.Username);
+
+        IQueryable<UserDto> projectUser = orderedUser.Select(user => new UserDto(
+            user.Id,
+            user.Username,
+            user.DisplayName,
+            user.Bio,
+            user.AvatarUrl
+        ));
+
+        IQueryable<UserDto> queryForPagination = projectUser.AsNoTracking();
+
+        PagedResult<UserDto> result = await PagedResult<UserDto>.CreateAsync(
+            queryForPagination,
+            page,
+            pageSize
+        );
+
+        return result;
+
+        // var usersQuery = _db.Set<User>()
+        //     .Where(u =>
+        //         u.Username.ToLower().Contains(normalized)
+        //         || u.DisplayName.ToLower().Contains(normalized)
+        //     );
+        // .OrderBy(u => u.Username);
+
+        // var projectQuery = query.Select(p => new UserDto {
+        //         AvatarUrl = p.
+        // });
+
+        // return await PagedResult<UserDto>.CreateAsync(
+        //     usersQuery.ProjectTo<UserDto>(_mapper.ConfigurationProvider),
+        //     page,
+        //     pageSize,
+        //     ct
+        // );
     }
 }
